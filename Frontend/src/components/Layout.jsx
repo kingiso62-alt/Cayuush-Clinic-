@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, CalendarDays, Activity, 
   Beaker, DollarSign, Settings, Menu, X, BarChart2, Users2, LogOut,
   Sun, Moon, Search, Bell, Mail, Calendar, ChevronDown, HelpCircle,
-  Clock, Bed, User, Heart, FileText, ArrowUpRight, ClipboardList
+  Clock, Bed, User, Heart, FileText, ArrowUpRight, ClipboardList, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -283,6 +283,7 @@ const Layout = ({ children }) => {
     { name: 'Expenses', icon: <DollarSign size={18} />, path: '/expenses' },
     { name: 'Procurement', icon: <Activity size={18} />, path: '/procurement' },
     { name: 'Attendance', icon: <Clock size={18} />, path: '/attendance' },
+    { name: 'SMS & WhatsApp', icon: <MessageSquare size={18} />, path: '/communications' },
     { name: 'Reports', icon: <BarChart2 size={18} />, path: '/reports' },
     { name: 'Settings', icon: <Settings size={18} />, path: '/settings' }
   ];
@@ -309,10 +310,10 @@ const Layout = ({ children }) => {
   const filteredManagementNavItems = managementNavItems.filter(item => {
     if (role === 'Admin') return true;
     if (role === 'Receptionist') {
-      return ['Billing', 'Debts', 'Attendance'].includes(item.name);
+      return ['Billing', 'Debts', 'Attendance', 'SMS & WhatsApp'].includes(item.name);
     }
     if (role === 'Doctor' || role === 'Pharmacist' || role === 'Lab Technician') {
-      return ['Attendance', 'Procurement'].includes(item.name);
+      return ['Attendance', 'Procurement', 'SMS & WhatsApp'].includes(item.name);
     }
     return false;
   });

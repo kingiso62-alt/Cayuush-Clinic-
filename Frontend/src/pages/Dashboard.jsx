@@ -24,6 +24,8 @@ const Dashboard = () => {
   });
 
   const [patientOverviewData, setPatientOverviewData] = useState([]);
+  const [revenueChartData, setRevenueChartData] = useState([]);
+  const [chartType, setChartType] = useState('patients'); // 'patients' | 'revenue'
   const [deptData, setDeptData] = useState([]);
   const [appointmentsList, setAppointmentsList] = useState([]);
   const [transactionsList, setTransactionsList] = useState([]);
@@ -212,6 +214,37 @@ const Dashboard = () => {
           { date: '20 Jul', Outpatients: 68, Inpatients: 48 },
           { date: '25 Jul', Outpatients: 90, Inpatients: 38 },
           { date: '30 Jul', Outpatients: 82, Inpatients: 44 }
+        ]);
+      }
+
+      // Fetch 30-day payment history for revenue chart
+      const paymentsStartDate = new Date();
+      paymentsStartDate.setDate(paymentsStartDate.getDate() - 30);
+      const { data: monthPayments } = await supabase
+        .from('payments')
+        .select('amount, payment_date')
+        .gte('payment_date', paymentsStartDate.toISOString());
+
+      if (monthPayments && monthPayments.length > 0) {
+        const groupedRev = {};
+        monthPayments.forEach(p => {
+          const dateLabel = new Date(p.payment_date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+          groupedRev[dateLabel] = (groupedRev[dateLabel] || 0) + parseFloat(p.amount);
+        });
+        const formattedRev = Object.keys(groupedRev).map(date => ({
+          date,
+          Revenue: groupedRev[date]
+        })).slice(-7);
+        setRevenueChartData(formattedRev);
+      } else {
+        setRevenueChartData([
+          { date: '1 Jul', Revenue: 450 },
+          { date: '5 Jul', Revenue: 680 },
+          { date: '10 Jul', Revenue: 510 },
+          { date: '15 Jul', Revenue: 900 },
+          { date: '20 Jul', Revenue: 1200 },
+          { date: '25 Jul', Revenue: 850 },
+          { date: '30 Jul', Revenue: 1100 }
         ]);
       }
 
@@ -438,38 +471,84 @@ const Dashboard = () => {
       {/* Row 2: Charts Grid (Three Columns) */}
       <div className="dashboard-grid-row-two">
         
-        {/* Patient Overview Line Area Chart */}
+        {/* Patient & Financial Overview Line Area Chart */}
         <div className="panel-card chart-panel-large">
-          <div className="panel-card-header">
-            <h4>Patient Overview</h4>
+          <div className="panel-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                onClick={() => setChartType('patients')}
+                style={{
+                  padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 'bold', border: 'none',
+                  background: chartType === 'patients' ? 'var(--primary-brand)' : 'var(--bg-body)',
+                  color: chartType === 'patients' ? 'white' : 'var(--text-main)',
+                  cursor: 'pointer', transition: 'all 0.2s ease'
+                }}
+              >
+                Patients Overview
+              </button>
+              <button 
+                onClick={() => setChartType('revenue')}
+                style={{
+                  padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 'bold', border: 'none',
+                  background: chartType === 'revenue' ? '#10b981' : 'var(--bg-body)',
+                  color: chartType === 'revenue' ? 'white' : 'var(--text-main)',
+                  cursor: 'pointer', transition: 'all 0.2s ease'
+                }}
+              >
+                Financial Revenue ($)
+              </button>
+            </div>
             <div className="dropdown-select-mini">
-              <span>This Month</span>
+              <span>Last 30 Days</span>
               <ChevronDown size={14} />
             </div>
           </div>
-          <div className="legend-indicator-row">
-            <div className="indicator-item"><span className="dot blue"></span>Outpatients</div>
-            <div className="indicator-item"><span className="dot green"></span>Inpatients</div>
-          </div>
+          
+          {chartType === 'patients' ? (
+            <div className="legend-indicator-row" style={{ marginTop: 12 }}>
+              <div className="indicator-item"><span className="dot blue"></span>Outpatients</div>
+              <div className="indicator-item"><span className="dot green"></span>Inpatients</div>
+            </div>
+          ) : (
+            <div className="legend-indicator-row" style={{ marginTop: 12 }}>
+              <div className="indicator-item"><span className="dot green" style={{ background: '#10b981' }}></span>Daily Revenue Collected ($)</div>
+            </div>
+          )}
+
           <div style={{ height: '240px', width: '100%', marginTop: '16px' }}>
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={patientOverviewData} margin={{ left: -20 }}>
-                <defs>
-                  <linearGradient id="blueGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15}/>
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.01}/>
-                  </linearGradient>
-                  <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#0D9488" stopOpacity={0.15}/>
-                    <stop offset="95%" stopColor="#0D9488" stopOpacity={0.01}/>
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
-                <Tooltip contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '12px', color: 'var(--text-main)' }} />
-                <Area type="monotone" dataKey="Outpatients" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#blueGrad)" dot={{ r: 4, fill: '#3B82F6' }} activeDot={{ r: 6 }} />
-                <Area type="monotone" dataKey="Inpatients" stroke="#0D9488" strokeWidth={3} fillOpacity={1} fill="url(#greenGrad)" dot={{ r: 4, fill: '#0D9488' }} activeDot={{ r: 6 }} />
-              </AreaChart>
+              {chartType === 'patients' ? (
+                <AreaChart data={patientOverviewData} margin={{ left: -20 }}>
+                  <defs>
+                    <linearGradient id="blueGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15}/>
+                      <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.01}/>
+                    </linearGradient>
+                    <linearGradient id="greenGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#0D9488" stopOpacity={0.15}/>
+                      <stop offset="95%" stopColor="#0D9488" stopOpacity={0.01}/>
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
+                  <Tooltip contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '12px', color: 'var(--text-main)' }} />
+                  <Area type="monotone" dataKey="Outpatients" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#blueGrad)" dot={{ r: 4, fill: '#3B82F6' }} activeDot={{ r: 6 }} />
+                  <Area type="monotone" dataKey="Inpatients" stroke="#0D9488" strokeWidth={3} fillOpacity={1} fill="url(#greenGrad)" dot={{ r: 4, fill: '#0D9488' }} activeDot={{ r: 6 }} />
+                </AreaChart>
+              ) : (
+                <AreaChart data={revenueChartData} margin={{ left: -20 }}>
+                  <defs>
+                    <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.15}/>
+                      <stop offset="95%" stopColor="#10b981" stopOpacity={0.01}/>
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 11 }} />
+                  <Tooltip formatter={(value) => [`$${parseFloat(value).toFixed(2)}`, 'Revenue']} contentStyle={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '12px', color: 'var(--text-main)' }} />
+                  <Area type="monotone" dataKey="Revenue" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#revGrad)" dot={{ r: 4, fill: '#10b981' }} activeDot={{ r: 6 }} />
+                </AreaChart>
+              )}
             </ResponsiveContainer>
           </div>
         </div>
