@@ -272,13 +272,17 @@ const Layout = ({ children }) => {
     { name: 'Certificates', icon: <Mail size={18} />, path: '/certificates' },
     { name: 'Encounters', icon: <FileText size={18} />, path: '/encounters' },
     { name: 'Referrals', icon: <ArrowUpRight size={18} />, path: '/referrals' },
-    { name: 'Procedures', icon: <ClipboardList size={18} />, path: '/procedures' }
+    { name: 'Procedures', icon: <ClipboardList size={18} />, path: '/procedures' },
+    { name: 'Maternity', icon: <Heart size={18} />, path: '/maternity' },
+    { name: 'Emergency', icon: <Activity size={18} />, path: '/emergency' }
   ];
 
   const managementNavItems = [
     { name: 'Billing', icon: <DollarSign size={18} />, path: '/billing' },
     { name: 'Debts', icon: <Bell size={18} />, path: '/debts' },
     { name: 'Expenses', icon: <DollarSign size={18} />, path: '/expenses' },
+    { name: 'Procurement', icon: <Activity size={18} />, path: '/procurement' },
+    { name: 'Attendance', icon: <Clock size={18} />, path: '/attendance' },
     { name: 'Reports', icon: <BarChart2 size={18} />, path: '/reports' },
     { name: 'Settings', icon: <Settings size={18} />, path: '/settings' }
   ];
@@ -288,7 +292,7 @@ const Layout = ({ children }) => {
   const filteredMainNavItems = mainNavItems.filter(item => {
     if (role === 'Admin') return true;
     if (role === 'Doctor') {
-      return ['Patients', 'Doctor Queue', 'Prescription Writer', 'Vaccinations', 'Certificates', 'Encounters', 'Referrals', 'Procedures'].includes(item.name);
+      return ['Patients', 'Doctor Queue', 'Prescription Writer', 'Vaccinations', 'Certificates', 'Encounters', 'Referrals', 'Procedures', 'Maternity', 'Emergency'].includes(item.name);
     }
     if (role === 'Pharmacist') {
       return ['Pharmacy'].includes(item.name);
@@ -297,7 +301,7 @@ const Layout = ({ children }) => {
       return ['Laboratory', 'Radiology'].includes(item.name);
     }
     if (role === 'Receptionist') {
-      return ['Patients', 'Appointments', 'Inpatients', 'Certificates', 'Encounters', 'Referrals', 'Procedures'].includes(item.name);
+      return ['Patients', 'Appointments', 'Inpatients', 'Certificates', 'Referrals', 'Procedures', 'Maternity', 'Emergency'].includes(item.name);
     }
     return false;
   });
@@ -305,7 +309,10 @@ const Layout = ({ children }) => {
   const filteredManagementNavItems = managementNavItems.filter(item => {
     if (role === 'Admin') return true;
     if (role === 'Receptionist') {
-      return ['Billing', 'Debts'].includes(item.name);
+      return ['Billing', 'Debts', 'Attendance'].includes(item.name);
+    }
+    if (role === 'Doctor' || role === 'Pharmacist' || role === 'Lab Technician') {
+      return ['Attendance', 'Procurement'].includes(item.name);
     }
     return false;
   });
