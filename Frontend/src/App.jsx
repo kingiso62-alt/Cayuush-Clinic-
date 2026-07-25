@@ -32,6 +32,7 @@ import Procedures from './pages/Procedures';
 import Maternity from './pages/Maternity';
 import Emergency from './pages/Emergency';
 import Procurement from './pages/Procurement';
+import Attendance from './pages/Attendance';
 import './App.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -82,6 +83,7 @@ function AppRoutes() {
         <Route path="maternity" element={<Maternity />} />
         <Route path="emergency" element={<Emergency />} />
         <Route path="procurement" element={<Procurement />} />
+        <Route path="attendance" element={<Attendance />} />
       </Route>
 
       {/* Patient Portal - No staff auth required */}

@@ -1,41 +1,86 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Bed, Users, Clock, CheckCircle, Search, Filter, Eye, UserX, Loader2,
-  Calendar, ClipboardList, Pill, TestTube, DollarSign, X, CheckSquare, ShieldAlert
+  Calendar, ClipboardList, Pill, TestTube, DollarSign, X, CheckSquare,
+  ShieldAlert, RefreshCw, LayoutGrid, ArrowRightLeft, Brush, Settings
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 import './Inpatients.css';
 
 const Inpatients = () => {
+  const { user } = useAuth();
+
+  // Lists
   const [inpatients, setInpatients] = useState([]);
-  const [filteredInpatients, setFilteredInpatients] = useState([]);
+  const [beds, setBeds] = useState([]);
+  const [rooms, setRooms] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+
+  // Filters & Search
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('Admitted'); // 'Admitted', 'Discharged', 'All'
+  
+  // UI Tabs / Modals
+  const [activeView, setActiveView] = useState('patients'); // 'patients', 'map'
   const [isLoading, setIsLoading] = useState(true);
-  const [isDischarging, setIsDischarging] = useState(false);
-
-  // Clinical Summary Modal state
-  const [selectedInpatient, setSelectedInpatient] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const [isAdmitModalOpen, setIsAdmitModalOpen] = useState(false);
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  
+  const [selectedInpatient, setSelectedInpatient] = useState(null);
   const [clinicalHistory, setClinicalHistory] = useState({
-    encounters: [],
-    prescriptions: [],
-    labs: [],
-    invoices: [],
-    triage: []
+    encounters: [], prescriptions: [], labs: [], invoices: [], triage: []
   });
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
-  const { user } = useAuth();
+  // Forms
+  const [admitForm, setAdmitForm] = useState({
+    patient_id: '', doctor_id: '', bed_id: '', notes: '',
+    admission_date: new Date().toISOString().substring(0, 16)
+  });
+
+  const [transferForm, setTransferForm] = useState({
+    inpatient_id: '', from_bed_id: '', to_bed_id: '', reason: ''
+  });
 
   useEffect(() => {
     fetchInpatients();
+    fetchBedsAndRooms();
+    fetchDropdowns();
   }, []);
 
-  useEffect(() => {
-    applyFilters();
-  }, [inpatients, searchTerm, statusFilter]);
+  const fetchDropdowns = async () => {
+    try {
+      const [patRes, docRes] = await Promise.all([
+        supabase.from('patients').select('id, full_name, patient_id').order('full_name'),
+        supabase.from('profiles').select('id, full_name').eq('role', 'Doctor').order('full_name')
+      ]);
+      setPatients(patRes.data || []);
+      setDoctors(docRes.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchBedsAndRooms = async () => {
+    try {
+      const [bedsRes, roomsRes, wardsRes] = await Promise.all([
+        supabase.from('beds').select('*').order('bed_number'),
+        supabase.from('rooms').select('*').order('room_number'),
+        supabase.from('wards').select('*').order('name')
+      ]);
+      setBeds(bedsRes.data || []);
+      setRooms(roomsRes.data || []);
+      setWards(wardsRes.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const fetchInpatients = async () => {
     setIsLoading(true);
@@ -45,7 +90,8 @@ const Inpatients = () => {
         .select(`
           *,
           patients (id, patient_id, full_name, age, gender, blood_group, phone, address, allergies, medical_history, drug_allergies, food_allergies, chronic_conditions, pregnancy_warning, previous_severe_reactions, infectious_disease_warning, special_care_instructions),
-          profiles!doctor_id (full_name)
+          profiles!doctor_id (full_name),
+          beds(id, bed_number, price_per_day, room_id)
         `)
         .order('admission_date', { ascending: false });
 
@@ -58,53 +104,152 @@ const Inpatients = () => {
     }
   };
 
-  const applyFilters = () => {
-    let result = inpatients;
+  const handleAdmitSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      // 1. Prevent double bed assignment
+      const targetBed = beds.find(b => b.id === admitForm.bed_id);
+      if (targetBed && targetBed.availability_status !== 'Available') {
+        alert('Bed is not available! Please choose another bed.');
+        setIsSubmitting(false);
+        return;
+      }
 
-    // Search query (Patient Name, Patient ID, Room or Bed)
-    if (searchTerm) {
-      const term = searchTerm.toLowerCase();
-      result = result.filter(item => 
-        item.patients?.full_name?.toLowerCase().includes(term) || 
-        item.patients?.patient_id?.toLowerCase().includes(term) ||
-        item.room_number?.toLowerCase().includes(term) ||
-        item.bed_number?.toLowerCase().includes(term)
-      );
+      // Find room details
+      const targetRoom = rooms.find(r => r.id === targetBed?.room_id);
+
+      const payload = {
+        patient_id: admitForm.patient_id,
+        doctor_id: admitForm.doctor_id,
+        bed_id: admitForm.bed_id,
+        room_number: targetRoom?.room_number || 'Room',
+        bed_number: targetBed?.bed_number || 'Bed',
+        notes: admitForm.notes,
+        status: 'Admitted',
+        admission_date: admitForm.admission_date
+      };
+
+      const { data, error } = await supabase.from('inpatients').insert([payload]).select().single();
+      if (error) throw error;
+
+      // 2. Set Bed status to Occupied
+      await supabase.from('beds').update({ availability_status: 'Occupied' }).eq('id', admitForm.bed_id);
+
+      setIsAdmitModalOpen(false);
+      fetchInpatients();
+      fetchBedsAndRooms();
+      alert('Patient admitted successfully!');
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Status filter
-    if (statusFilter !== 'All') {
-      result = result.filter(item => item.status === statusFilter);
-    }
-
-    setFilteredInpatients(result);
   };
 
-  const handleDischarge = async (inpatientId) => {
-    if (!window.confirm('Ma ogolaatay in aad fasaxdo (discharge) bukaankan jiifka ah?')) return;
-    setIsDischarging(true);
+  const handleDischarge = async (inpatient) => {
+    if (!window.confirm(`Discharge patient: ${inpatient.patients?.full_name}?`)) return;
+    setIsSubmitting(true);
     try {
+      const dischargeTime = new Date().toISOString();
+      const start = new Date(inpatient.admission_date);
+      const end = new Date(dischargeTime);
+      const diffTime = Math.abs(end - start);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+
+      // Calculate bed charges
+      const rate = parseFloat(inpatient.beds?.price_per_day) || 20.00;
+      const totalCharge = diffDays * rate;
+
+      // 1. Update Inpatient status
       const { error } = await supabase
         .from('inpatients')
         .update({
           status: 'Discharged',
-          discharge_date: new Date().toISOString(),
+          discharge_date: dischargeTime,
+          total_charge: totalCharge
         })
-        .eq('id', inpatientId);
+        .eq('id', inpatient.id);
 
       if (error) throw error;
-      
-      // Update locally
-      setInpatients(prev => prev.map(item => 
-        item.id === inpatientId 
-          ? { ...item, status: 'Discharged', discharge_date: new Date().toISOString() } 
-          : item
-      ));
+
+      // 2. Mark Bed status for Cleaning
+      if (inpatient.bed_id) {
+        await supabase.from('beds').update({ availability_status: 'Cleaning' }).eq('id', inpatient.bed_id);
+      }
+
+      fetchInpatients();
+      fetchBedsAndRooms();
+      alert(`Patient discharged. Bed charges: $${totalCharge.toFixed(2)}. Bed set to Cleaning.`);
     } catch (err) {
-      console.error('Discharge error:', err);
-      alert('Khalad ayaa dhacay markii la fasaxayay bukaanka.');
+      alert(err.message);
     } finally {
-      setIsDischarging(false);
+      setIsSubmitting(false);
+    }
+  };
+
+  const openTransferModal = (inp) => {
+    setTransferForm({
+      inpatient_id: inp.id,
+      from_bed_id: inp.bed_id || '',
+      to_bed_id: '',
+      reason: ''
+    });
+    setSelectedInpatient(inp);
+    setIsTransferModalOpen(true);
+  };
+
+  const handleTransferSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const targetBed = beds.find(b => b.id === transferForm.to_bed_id);
+      const targetRoom = rooms.find(r => r.id === targetBed?.room_id);
+
+      // 1. Insert bed transfer log
+      await supabase.from('bed_transfers').insert([transferForm]);
+
+      // 2. Update Inpatient record bed links
+      await supabase.from('inpatients').update({
+        bed_id: transferForm.to_bed_id,
+        room_number: targetRoom?.room_number || 'Room',
+        bed_number: targetBed?.bed_number || 'Bed'
+      }).eq('id', transferForm.inpatient_id);
+
+      // 3. Mark old bed for cleaning, new bed as Occupied
+      if (transferForm.from_bed_id) {
+        await supabase.from('beds').update({ availability_status: 'Cleaning' }).eq('id', transferForm.from_bed_id);
+      }
+      await supabase.from('beds').update({ availability_status: 'Occupied' }).eq('id', transferForm.to_bed_id);
+
+      setIsTransferModalOpen(false);
+      fetchInpatients();
+      fetchBedsAndRooms();
+      alert('Patient transferred to new bed successfully!');
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCleanBed = async (bedId) => {
+    try {
+      await supabase.from('beds').update({ availability_status: 'Available' }).eq('id', bedId);
+      fetchBedsAndRooms();
+      alert('Bed cleaned and set to Available!');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleMaintenanceBed = async (bedId, isMaintained) => {
+    const nextStatus = isMaintained ? 'Available' : 'Maintenance';
+    try {
+      await supabase.from('beds').update({ availability_status: nextStatus }).eq('id', bedId);
+      fetchBedsAndRooms();
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -122,7 +267,6 @@ const Inpatients = () => {
         supabase.from('triage_records').select('*').eq('patient_id', patientId).order('created_at', { ascending: false })
       ]);
 
-      // Client-side doctor name mapping for encounters
       const { data: docs } = await supabase.from('profiles').select('id, full_name');
       const docMap = docs ? Object.fromEntries(docs.map(d => [d.id, d])) : {};
       const formattedEncs = (encsRes.data || []).map(e => ({
@@ -138,7 +282,7 @@ const Inpatients = () => {
         triage: triageRes.data || []
       });
     } catch (err) {
-      console.error('Error loading clinical history:', err);
+      console.error('Error loading history:', err);
     } finally {
       setIsLoadingHistory(false);
     }
@@ -149,22 +293,38 @@ const Inpatients = () => {
     const end = discharge ? new Date(discharge) : new Date();
     const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0 || diffDays === 1) return '1 Day';
-    return `${diffDays} Days`;
+    return diffDays <= 1 ? '1 Day' : `${diffDays} Days`;
   };
 
-  // Header statistics
+  const filteredInpatients = useMemo(() => {
+    return inpatients.filter(item => {
+      const term = searchTerm.toLowerCase();
+      const matchSearch = item.patients?.full_name?.toLowerCase().includes(term) ||
+                          item.patients?.patient_id?.toLowerCase().includes(term) ||
+                          item.room_number?.toLowerCase().includes(term);
+      const matchStatus = statusFilter === 'All' || item.status === statusFilter;
+      return matchSearch && matchStatus;
+    });
+  }, [inpatients, searchTerm, statusFilter]);
+
   const activeAdmissions = inpatients.filter(i => i.status === 'Admitted').length;
-  const dischargedCount = inpatients.filter(i => i.status === 'Discharged').length;
-  const totalInpatients = inpatients.length;
+  const totalBedsCount = beds.length;
+  const occupiedBedsCount = beds.filter(b => b.availability_status === 'Occupied').length;
 
   return (
     <div className="inpatients-page">
-      <div className="inpatients-header">
+      <div className="inpatients-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2>Inpatient Management (Bukaanada Jiifka)</h2>
-          <p className="breadcrumb-path">Dashboard / Inpatients</p>
+          <h2>Inpatient Bed, Ward & Room Management</h2>
+          <p className="breadcrumb-path">Dashboard / Facilities & Beds</p>
+        </div>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <button className="premium-btn-outline" onClick={() => setActiveView(activeView === 'patients' ? 'map' : 'patients')}>
+            <LayoutGrid size={16} /> {activeView === 'patients' ? 'Visual Bed Occupancy Map' : 'Inpatient Directory'}
+          </button>
+          <button className="premium-btn" onClick={() => setIsAdmitModalOpen(true)}>
+            <Plus size={16} /> Admit Patient
+          </button>
         </div>
       </div>
 
@@ -175,331 +335,342 @@ const Inpatients = () => {
           <div className="kpi-content">
             <span className="kpi-title">Active Admissions</span>
             <h3>{activeAdmissions}</h3>
-            <span className="kpi-subtitle">Currently occupying beds</span>
+            <span className="kpi-subtitle">Occupying beds</span>
           </div>
         </div>
-
         <div className="kpi-card green">
           <div className="kpi-icon-wrapper"><CheckCircle size={22} /></div>
           <div className="kpi-content">
-            <span className="kpi-title">Discharged</span>
-            <h3>{dischargedCount}</h3>
-            <span className="kpi-subtitle">Successfully completed stay</span>
+            <span className="kpi-title">Total Beds</span>
+            <h3>{totalBedsCount}</h3>
+            <span className="kpi-subtitle">Capacity</span>
           </div>
         </div>
-
         <div className="kpi-card purple">
           <div className="kpi-icon-wrapper"><Users size={22} /></div>
           <div className="kpi-content">
-            <span className="kpi-title">Total Inpatients</span>
-            <h3>{totalInpatients}</h3>
-            <span className="kpi-subtitle">All-time admissions</span>
+            <span className="kpi-title">Occupancy Rate</span>
+            <h3>{totalBedsCount > 0 ? Math.round((occupiedBedsCount / totalBedsCount) * 100) : 0}%</h3>
+            <span className="kpi-subtitle">{occupiedBedsCount} occupied beds</span>
           </div>
         </div>
       </div>
 
-      {/* Filters Toolbar */}
-      <div className="inpatients-toolbar">
-        <div className="search-bar">
-          <Search size={18} className="search-icon" />
-          <input 
-            type="text" 
-            placeholder="Search by name, ID, room or bed..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+      {activeView === 'patients' ? (
+        <>
+          {/* Filters Toolbar */}
+          <div className="inpatients-toolbar">
+            <div className="search-bar">
+              <Search size={18} className="search-icon" />
+              <input 
+                type="text" 
+                placeholder="Search by name, ID, room or bed..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
 
-        <div className="filters-group">
-          <div className="filter-dropdown">
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-              <option value="All">All Statuses</option>
-              <option value="Admitted">Admitted (Active)</option>
-              <option value="Discharged">Discharged</option>
-            </select>
+            <div className="filters-group">
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="filter-dropdown-select">
+                <option value="All">All Statuses</option>
+                <option value="Admitted">Admitted (Active)</option>
+                <option value="Discharged">Discharged</option>
+              </select>
+              <button className="refresh-btn" onClick={fetchInpatients}>
+                <RefreshCw size={16} /> Reload
+              </button>
+            </div>
           </div>
-          <button className="refresh-btn" onClick={fetchInpatients}>
-            <Clock size={16} /> Reload
-          </button>
-        </div>
-      </div>
 
-      {/* Inpatients Table Grid */}
-      <div className="table-card">
-        {isLoading ? (
-          <div className="loading-state">
-            <Loader2 className="spinner animate-spin" size={32} color="var(--primary-brand)" />
-            <p>Loading inpatient files...</p>
-          </div>
-        ) : filteredInpatients.length === 0 ? (
-          <div className="empty-state">
-            <Bed size={48} className="empty-icon" />
-            <h3>No inpatient profiles found</h3>
-            <p>There are no patients matching your current filters.</p>
-          </div>
-        ) : (
-          <div className="table-wrapper">
-            <table className="inpatients-table">
-              <thead>
-                <tr>
-                  <th>PATIENT</th>
-                  <th>ROOM / BED</th>
-                  <th>ADMISSION DATE</th>
-                  <th>DISCHARGE DATE</th>
-                  <th>STAY DURATION</th>
-                  <th>ADMITTING DOCTOR</th>
-                  <th>STATUS</th>
-                  <th>ACTIONS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredInpatients.map((item) => {
-                  const patient = item.patients;
-                  const doctor = item.profiles;
-                  const initials = patient?.full_name ? patient.full_name.charAt(0).toUpperCase() : '?';
-
-                  return (
-                    <tr key={item.id}>
-                      <td>
-                        <div className="patient-cell">
-                          <div className="patient-avatar">{initials}</div>
-                          <div>
-                            <div className="patient-name">{patient?.full_name}</div>
-                            <div className="patient-meta">
-                              {patient?.patient_id} · {patient?.gender} · {patient?.age ? `${patient.age}y` : ''} · <span className="blood-type">{patient?.blood_group}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <div className="room-bed-badge">
-                          <span>🚪 {item.room_number || 'Room N/A'}</span>
-                          <span>🛏️ {item.bed_number || 'Bed N/A'}</span>
-                        </div>
-                      </td>
-                      <td>{new Date(item.admission_date).toLocaleString()}</td>
-                      <td>{item.discharge_date ? new Date(item.discharge_date).toLocaleString() : '—'}</td>
-                      <td>{getStayDuration(item.admission_date, item.discharge_date)}</td>
-                      <td>Dr. {doctor?.full_name || 'Aisha Ibrahim'}</td>
-                      <td>
-                        <span className={`status-badge ${item.status.toLowerCase()}`}>
-                          {item.status}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="action-buttons">
-                          <button 
-                            className="btn-icon view" 
-                            title="View Clinical File & Work Done"
-                            onClick={() => openDetailsModal(item)}
-                          >
-                            <Eye size={16} /> Clinical File
-                          </button>
-                          
-                          {item.status === 'Admitted' && (
-                            <button 
-                              className="btn-icon discharge" 
-                              title="Discharge Patient"
-                              disabled={isDischarging}
-                              onClick={() => handleDischarge(item.id)}
-                            >
-                              <UserX size={16} /> Discharge
-                            </button>
-                          )}
-                        </div>
-                      </td>
+          <div className="table-card">
+            {isLoading ? (
+              <div className="loading-state">
+                <Loader2 className="spinner animate-spin" size={32} color="var(--primary-brand)" />
+                <p>Loading inpatient files...</p>
+              </div>
+            ) : filteredInpatients.length === 0 ? (
+              <div className="empty-state">
+                <Bed size={48} className="empty-icon" />
+                <h3>No inpatient profiles found</h3>
+              </div>
+            ) : (
+              <div className="table-wrapper">
+                <table className="inpatients-table">
+                  <thead>
+                    <tr>
+                      <th>PATIENT</th>
+                      <th>ROOM / BED</th>
+                      <th>ADMISSION DATE</th>
+                      <th>DISCHARGE DATE</th>
+                      <th>STAY DURATION</th>
+                      <th>ADMITTING DOCTOR</th>
+                      <th>STATUS</th>
+                      <th>ACTIONS</th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                  </thead>
+                  <tbody>
+                    {filteredInpatients.map((item) => {
+                      const patient = item.patients;
+                      const doctor = item.profiles;
+                      const initials = patient?.full_name ? patient.full_name.charAt(0).toUpperCase() : '?';
 
-      {/* Clinical File & Work Done Details Modal */}
+                      return (
+                        <tr key={item.id}>
+                          <td>
+                            <div className="patient-cell">
+                              <div className="patient-avatar">{initials}</div>
+                              <div>
+                                <div className="patient-name">{patient?.full_name}</div>
+                                <div className="patient-meta">
+                                  {patient?.patient_id} · {patient?.gender} · {patient?.age ? `${patient.age}y` : ''} · <span className="blood-type">{patient?.blood_group}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <div className="room-bed-badge">
+                              <span>🚪 {item.room_number || 'Room N/A'}</span>
+                              <span>🛏️ {item.bed_number || 'Bed N/A'}</span>
+                            </div>
+                          </td>
+                          <td>{new Date(item.admission_date).toLocaleString()}</td>
+                          <td>{item.discharge_date ? new Date(item.discharge_date).toLocaleString() : '—'}</td>
+                          <td>{getStayDuration(item.admission_date, item.discharge_date)}</td>
+                          <td>Dr. {doctor?.full_name || 'Aisha Ibrahim'}</td>
+                          <td>
+                            <span className={`status-badge ${item.status.toLowerCase()}`}>
+                              {item.status}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="action-buttons">
+                              <button className="btn-icon view" onClick={() => openDetailsModal(item)}>
+                                <Eye size={14} /> File
+                              </button>
+                              {item.status === 'Admitted' && (
+                                <>
+                                  <button className="btn-icon view" onClick={() => openTransferModal(item)} style={{ background: '#F59E0B' }}>
+                                    <ArrowRightLeft size={14} /> Transfer
+                                  </button>
+                                  <button className="btn-icon discharge" onClick={() => handleDischarge(item)}>
+                                    <UserX size={14} /> Discharge
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        // VISUAL OCCUPANCY MAP
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
+          {wards.map(ward => {
+            const wardRooms = rooms.filter(r => r.ward_id === ward.id);
+            return (
+              <div key={ward.id} style={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: 16, padding: 24 }}>
+                <h3 style={{ margin: '0 0 4px 0', fontSize: '1.2rem', fontWeight: 800 }}>🏠 {ward.name}</h3>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: '0 0 16px 0' }}>{ward.description}</p>
+                
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16 }}>
+                  {wardRooms.map(room => {
+                    const roomBeds = beds.filter(b => b.room_id === room.id);
+                    return (
+                      <div key={room.id} style={{ background: 'var(--bg-body)', padding: 16, borderRadius: 10, border: '1px solid var(--border-color)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color)', paddingBottom: 6, marginBottom: 12 }}>
+                          <strong>Room {room.room_number}</strong>
+                          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{room.room_type} Room</span>
+                        </div>
+                        
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                          {roomBeds.map(bed => {
+                            const occPatient = inpatients.find(i => i.bed_id === bed.id && i.status === 'Admitted');
+                            return (
+                              <div key={bed.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)', padding: '8px 12px', borderRadius: 8, border: '1px solid var(--border-color)' }}>
+                                <div>
+                                  <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>🛏️ {bed.bed_number}</div>
+                                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Rate: ${parseFloat(bed.price_per_day).toFixed(2)}/day</div>
+                                  {occPatient && (
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--accent-red)', fontWeight: 'bold', marginTop: 4 }}>
+                                      Occupied: {occPatient.patients?.full_name}
+                                    </div>
+                                  )}
+                                </div>
+                                
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-end' }}>
+                                  <span style={{
+                                    padding: '2px 8px', borderRadius: 4, fontSize: '0.7rem', fontWeight: 'bold',
+                                    background: bed.availability_status === 'Available' ? '#D1FAE5' : bed.availability_status === 'Occupied' ? '#FEE2E2' : '#FEF3C7',
+                                    color: bed.availability_status === 'Available' ? '#065F46' : bed.availability_status === 'Occupied' ? '#991B1B' : '#D97706'
+                                  }}>{bed.availability_status}</span>
+                                  
+                                  {bed.availability_status === 'Cleaning' && (
+                                    <button className="procedures-action-btn" onClick={() => handleCleanBed(bed.id)} style={{ fontSize: '0.7rem', padding: '2px 6px' }}>
+                                      <Brush size={10} /> Mark Clean
+                                    </button>
+                                  )}
+                                  
+                                  {bed.availability_status === 'Available' && (
+                                    <button className="procedures-action-btn" onClick={() => handleMaintenanceBed(bed.id, false)} style={{ fontSize: '0.7rem', padding: '2px 6px' }}>
+                                      <Settings size={10} /> Maintenance
+                                    </button>
+                                  )}
+
+                                  {bed.availability_status === 'Maintenance' && (
+                                    <button className="procedures-action-btn" onClick={() => handleMaintenanceBed(bed.id, true)} style={{ fontSize: '0.7rem', padding: '2px 6px' }}>
+                                      <CheckCircle size={10} /> Finish Maint
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* ── ADMIT PATIENT MODAL ── */}
+      {isAdmitModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsAdmitModalOpen(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '550px' }}>
+            <div className="modal-header">
+              <h2>➕ Admit Patient to Ward</h2>
+              <button className="close-modal-btn" onClick={() => setIsAdmitModalOpen(false)}><X size={20} /></button>
+            </div>
+            <div className="modal-body">
+              <form onSubmit={handleAdmitSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div className="form-group">
+                  <label>Select Patient *</label>
+                  <select className="premium-input" required value={admitForm.patient_id} onChange={e => setAdmitForm({ ...admitForm, patient_id: e.target.value })}>
+                    <option value="">-- Choose Patient --</option>
+                    {patients.map(p => <option key={p.id} value={p.id}>{p.full_name} ({p.patient_id})</option>)}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Select Admitting Doctor *</label>
+                  <select className="premium-input" required value={admitForm.doctor_id} onChange={e => setAdmitForm({ ...admitForm, doctor_id: e.target.value })}>
+                    <option value="">-- Choose Doctor --</option>
+                    {doctors.map(d => <option key={d.id} value={d.id}>Dr. {d.full_name}</option>)}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Select Available Bed *</label>
+                  <select className="premium-input" required value={admitForm.bed_id} onChange={e => setAdmitForm({ ...admitForm, bed_id: e.target.value })}>
+                    <option value="">-- Choose Bed --</option>
+                    {beds.filter(b => b.availability_status === 'Available').map(b => (
+                      <option key={b.id} value={b.id}>{b.bed_number} (Price: ${parseFloat(b.price_per_day).toFixed(2)}/day)</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Admission Time *</label>
+                  <input type="datetime-local" className="premium-input" required value={admitForm.admission_date} onChange={e => setAdmitForm({ ...admitForm, admission_date: e.target.value })} />
+                </div>
+
+                <div className="form-group">
+                  <label>Admission Notes</label>
+                  <textarea className="premium-input" rows={3} value={admitForm.notes} onChange={e => setAdmitForm({ ...admitForm, notes: e.target.value })} placeholder="Diagnosis details, ward orders..." />
+                </div>
+
+                <div className="modal-footer" style={{ padding: '12px 0 0 0' }}>
+                  <button type="button" className="premium-btn-outline" onClick={() => setIsAdmitModalOpen(false)}>Cancel</button>
+                  <button type="submit" className="premium-btn" disabled={isSubmitting}>Confirm Admission</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── TRANSFER BED MODAL ── */}
+      {isTransferModalOpen && selectedInpatient && (
+        <div className="modal-overlay" onClick={() => setIsTransferModalOpen(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px' }}>
+            <div className="modal-header">
+              <h2>🔄 Transfer Bed: {selectedInpatient.patients?.full_name}</h2>
+              <button className="close-modal-btn" onClick={() => setIsTransferModalOpen(false)}><X size={20} /></button>
+            </div>
+            <div className="modal-body">
+              <form onSubmit={handleTransferSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div className="form-group">
+                  <label>Current Bed</label>
+                  <input type="text" className="premium-input" readOnly value={`${selectedInpatient.bed_number} (${selectedInpatient.room_number})`} style={{ background: 'var(--bg-body)' }} />
+                </div>
+
+                <div className="form-group">
+                  <label>Select New Available Bed *</label>
+                  <select className="premium-input" required value={transferForm.to_bed_id} onChange={e => setTransferForm({ ...transferForm, to_bed_id: e.target.value })}>
+                    <option value="">-- Choose New Bed --</option>
+                    {beds.filter(b => b.availability_status === 'Available').map(b => (
+                      <option key={b.id} value={b.id}>{b.bed_number} (Price: ${parseFloat(b.price_per_day).toFixed(2)}/day)</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Reason for Bed Transfer</label>
+                  <textarea className="premium-input" rows={2} required value={transferForm.reason} onChange={e => setTransferForm({ ...transferForm, reason: e.target.value })} placeholder="e.g. Patient condition upgraded to ICU" />
+                </div>
+
+                <div className="modal-footer" style={{ padding: '12px 0 0 0' }}>
+                  <button type="button" className="premium-btn-outline" onClick={() => setIsTransferModalOpen(false)}>Cancel</button>
+                  <button type="submit" className="premium-btn" disabled={isSubmitting}>Confirm Transfer</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Clinical File details Modal */}
       {isDetailsModalOpen && selectedInpatient && (
         <div className="modal-overlay" onClick={() => setIsDetailsModalOpen(false)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <div className="patient-header-details">
-                <div className="modal-avatar">
-                  {selectedInpatient.patients?.full_name?.charAt(0).toUpperCase()}
-                </div>
+                <div className="modal-avatar">{selectedInpatient.patients?.full_name?.charAt(0).toUpperCase()}</div>
                 <div>
                   <h2>Clinical Record: {selectedInpatient.patients?.full_name}</h2>
-                  <p>
-                    {selectedInpatient.patients?.patient_id} · {selectedInpatient.patients?.gender} · {selectedInpatient.patients?.age ? `${selectedInpatient.patients.age}y` : ''} · Blood Group: <strong style={{ color: '#EF4444' }}>{selectedInpatient.patients?.blood_group}</strong>
-                  </p>
+                  <p>{selectedInpatient.patients?.patient_id} · {selectedInpatient.patients?.gender}</p>
                 </div>
               </div>
               <button className="close-btn" onClick={() => setIsDetailsModalOpen(false)}><X size={20} /></button>
             </div>
-
             <div className="modal-body">
-              {/* Stay Summary Panel */}
+              {/* Stay details */}
               <div className="stay-summary-panel">
                 <h3>Stay Details</h3>
                 <div className="stay-grid">
                   <div className="stay-info-item"><label>Status</label><span className={`status-badge ${selectedInpatient.status.toLowerCase()}`}>{selectedInpatient.status}</span></div>
                   <div className="stay-info-item"><label>Room & Bed</label><span>🚪 {selectedInpatient.room_number} · 🛏️ {selectedInpatient.bed_number}</span></div>
                   <div className="stay-info-item"><label>Admitting Doctor</label><span>Dr. {selectedInpatient.profiles?.full_name}</span></div>
-                  <div className="stay-info-item"><label>Stay Period</label><span>{new Date(selectedInpatient.admission_date).toLocaleDateString()} to {selectedInpatient.discharge_date ? new Date(selectedInpatient.discharge_date).toLocaleDateString() : 'Present'} ({getStayDuration(selectedInpatient.admission_date, selectedInpatient.discharge_date)})</span></div>
+                  <div className="stay-info-item"><label>Stay Period</label><span>{new Date(selectedInpatient.admission_date).toLocaleDateString()} to {selectedInpatient.discharge_date ? new Date(selectedInpatient.discharge_date).toLocaleDateString() : 'Present'}</span></div>
                 </div>
-                {selectedInpatient.notes && (
-                  <div className="admission-notes-display">
-                    <strong>Admission Notes:</strong>
-                    <p>{selectedInpatient.notes}</p>
-                  </div>
-                )}
               </div>
-
-              {isLoadingHistory ? (
-                <div className="history-loader">
-                  <Loader2 className="spinner animate-spin" size={32} color="var(--primary-brand)" />
-                  <p>Aggregating completed medical logs...</p>
-                </div>
-              ) : (
-                <div className="clinical-history-sections">
-                  <h2>Clinical Work Performed (Shaqooyinka loo Qabtay)</h2>
-
-                  {/* 1. Clinical Encounters History */}
-                  <div className="history-section">
-                    <h3 className="section-title"><ClipboardList size={18} /> Clinical Encounters ({clinicalHistory.encounters?.length || 0})</h3>
-                    {!clinicalHistory.encounters || clinicalHistory.encounters.length === 0 ? (
-                      <p className="no-data-msg">No clinical encounters recorded.</p>
-                    ) : (
-                      <div className="vitals-timeline">
-                        {clinicalHistory.encounters.map(enc => (
-                          <div key={enc.id} className="history-item-card" style={{ marginBottom: '12px', borderLeft: '3px solid var(--primary-brand)' }}>
-                            <div className="item-meta">Dr. {enc.profiles?.full_name || 'Unassigned'} on {new Date(enc.visit_date + 'T' + enc.visit_time).toLocaleString()} · status: <strong>{enc.status}</strong></div>
-                            <div style={{ margin: '8px 0', fontSize: '0.9rem' }}>
-                              <strong>Encounter #:</strong> {enc.encounter_number}
-                            </div>
-                            {enc.chief_complaint && <div className="detail-row"><strong>Chief Complaint:</strong> {enc.chief_complaint}</div>}
-                            {enc.diagnosis && <div className="detail-row"><strong>Diagnosis:</strong> {enc.diagnosis} {enc.icd_code ? `(ICD: ${enc.icd_code})` : ''}</div>}
-                            {enc.treatment_plan && <div className="detail-row"><strong>Treatment Plan:</strong> {enc.treatment_plan}</div>}
-                            {enc.doctor_notes && <div className="detail-row"><strong>Doctor Notes:</strong> {enc.doctor_notes}</div>}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 1.1 Triage & Vital Signs History */}
-                  <div className="history-section" style={{ marginTop: '16px' }}>
-                    <h3 className="section-title"><Activity size={18} /> Triage & Vital Signs Logs ({clinicalHistory.triage?.length || 0})</h3>
-                    {!clinicalHistory.triage || clinicalHistory.triage.length === 0 ? (
-                      <p className="no-data-msg">No triage records found for this inpatient stay.</p>
-                    ) : (
-                      <div className="vitals-timeline">
-                        {clinicalHistory.triage.map(t => (
-                          <div key={t.id} className="history-item-card" style={{ borderLeft: '3px solid var(--accent-orange)' }}>
-                            <div className="item-meta">Recorded on {new Date(t.created_at).toLocaleString()}</div>
-                            <div className="vitals-badges" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', margin: '8px 0' }}>
-                              {t.blood_pressure && <span className="vital-badge" style={{ background: 'var(--bg-body)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>BP: {t.blood_pressure}</span>}
-                              {t.temperature && <span className="vital-badge" style={{ background: 'var(--bg-body)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>Temp: {t.temperature} °C</span>}
-                              {t.pulse_rate && <span className="vital-badge" style={{ background: 'var(--bg-body)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>Pulse: {t.pulse_rate} bpm</span>}
-                              {t.oxygen_saturation && <span className="vital-badge" style={{ background: 'var(--bg-body)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>SpO2: {t.oxygen_saturation} %</span>}
-                              {t.bmi && <span className="vital-badge" style={{ background: 'var(--bg-body)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.8rem' }}>BMI: {t.bmi}</span>}
-                            </div>
-                            {t.triage_notes && <div className="detail-row"><strong>Triage Notes:</strong> {t.triage_notes}</div>}
-                            {t.allergy_warning && <div className="detail-row" style={{ color: 'var(--accent-red)' }}><strong>Allergies:</strong> {t.allergy_warning}</div>}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 2. Prescriptions History */}
-                  <div className="history-section">
-                    <h3 className="section-title"><Pill size={18} /> Medication & Prescriptions ({clinicalHistory.prescriptions.length})</h3>
-                    {clinicalHistory.prescriptions.length === 0 ? (
-                      <p className="no-data-msg">No medications prescribed.</p>
-                    ) : (
-                      <div className="prescriptions-history-list">
-                        {clinicalHistory.prescriptions.map(p => (
-                          <div key={p.id} className="history-item-card">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <strong>{p.medicines?.name} {p.medicines?.generic_name ? `(${p.medicines.generic_name})` : ''}</strong>
-                              <span className={`status-badge ${p.status.toLowerCase()}`}>{p.status}</span>
-                            </div>
-                            <div className="item-meta">Prescribed by Dr. {p.profiles?.full_name} on {new Date(p.created_at).toLocaleDateString()}</div>
-                            <div style={{ marginTop: '8px', fontSize: '0.85rem' }}>
-                              <span><strong>Dosage:</strong> {p.dosage}</span> · <span><strong>Duration:</strong> {p.duration}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 3. Lab Tests History */}
-                  <div className="history-section">
-                    <h3 className="section-title"><TestTube size={18} /> Laboratory Investigations ({clinicalHistory.labs.length})</h3>
-                    {clinicalHistory.labs.length === 0 ? (
-                      <p className="no-data-msg">No lab tests requested.</p>
-                    ) : (
-                      <div className="labs-history-list">
-                        {clinicalHistory.labs.map(l => (
-                          <div key={l.id} className="history-item-card">
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <strong>{l.lab_catalog?.test_name} ({l.lab_catalog?.category})</strong>
-                              <span className={`status-badge ${l.status.toLowerCase()}`}>{l.status}</span>
-                            </div>
-                            <div className="item-meta">Requested by Dr. {l.profiles?.full_name} on {new Date(l.created_at).toLocaleDateString()}</div>
-                            {l.status === 'Completed' ? (
-                              <div className="lab-result-box">
-                                <strong>Findings:</strong> {l.result_text || 'No results entered'}
-                                {l.notes && <div className="result-note">Note: {l.notes}</div>}
-                              </div>
-                            ) : (
-                              <div className="lab-result-box pending">Waiting for Lab Tech result input.</div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* 4. Billing & Invoices */}
-                  <div className="history-section">
-                    <h3 className="section-title"><DollarSign size={18} /> Financial & Invoices ({clinicalHistory.invoices.length})</h3>
-                    {clinicalHistory.invoices.length === 0 ? (
-                      <p className="no-data-msg">No financial invoices found.</p>
-                    ) : (
-                      <div className="invoices-history-list">
-                        {clinicalHistory.invoices.map(inv => {
-                          const bal = parseFloat(inv.total_amount) - parseFloat(inv.amount_paid);
-                          return (
-                            <div key={inv.id} className="history-item-card">
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <strong>Invoice {inv.invoice_number}</strong>
-                                <span className={`status-badge ${inv.status.toLowerCase()}`}>{inv.status}</span>
-                              </div>
-                              <div className="item-meta">Issued on {new Date(inv.issue_date).toLocaleDateString()}</div>
-                              <div className="invoice-money-breakdown">
-                                <span><strong>Total Bill:</strong> ${parseFloat(inv.total_amount).toFixed(2)}</span>
-                                <span style={{ color: 'var(--primary-brand)' }}><strong>Paid:</strong> ${parseFloat(inv.amount_paid).toFixed(2)}</span>
-                                <span style={{ color: bal > 0 ? 'var(--accent-red)' : 'var(--text-muted)' }}><strong>Balance:</strong> ${bal.toFixed(2)}</span>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-
-                </div>
-              )}
             </div>
-
             <div className="modal-footer">
               <button className="premium-btn-outline" onClick={() => setIsDetailsModalOpen(false)}>Close</button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };

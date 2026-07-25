@@ -1,0 +1,180 @@
+/* Premium Shifts and Attendance Stylesheet */
+.attendance-layout {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.attendance-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.attendance-header-left h1 {
+  margin: 0 0 4px 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.attendance-subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.attendance-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.attendance-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.attendance-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.attendance-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attendance-stat-icon.present { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+.attendance-stat-icon.late { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+.attendance-stat-icon.absent { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+.attendance-stat-icon.on-call { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+
+.attendance-stat-info h3 {
+  margin: 0 0 2px 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.attendance-stat-info p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.attendance-split-panel {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .attendance-split-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+.attendance-clocking-widget {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.attendance-clock-time {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--text-main);
+  font-family: monospace;
+}
+
+.attendance-clock-btn {
+  padding: 16px 40px;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: var(--shadow-md);
+}
+
+.attendance-clock-btn.in {
+  background: var(--primary-brand);
+  color: white;
+}
+
+.attendance-clock-btn.in:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.attendance-clock-btn.out {
+  background: var(--accent-red);
+  color: white;
+}
+
+.attendance-clock-btn.out:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.attendance-badge-status {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+.attendance-badge-status.on { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+.attendance-badge-status.off { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+
+.attendance-roster-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.attendance-roster-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.attendance-roster-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
