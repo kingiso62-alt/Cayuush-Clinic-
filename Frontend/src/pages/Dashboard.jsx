@@ -480,7 +480,7 @@ const Dashboard = () => {
                 style={{
                   padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 'bold', border: 'none',
                   background: chartType === 'patients' ? 'var(--primary-brand)' : 'var(--bg-body)',
-                  color: chartType === 'patients' ? 'white' : 'var(--text-main)',
+                  color: chartType === 'patients' ? '#ffffff' : 'var(--text-muted)',
                   cursor: 'pointer', transition: 'all 0.2s ease'
                 }}
               >
@@ -491,7 +491,7 @@ const Dashboard = () => {
                 style={{
                   padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 'bold', border: 'none',
                   background: chartType === 'revenue' ? '#10b981' : 'var(--bg-body)',
-                  color: chartType === 'revenue' ? 'white' : 'var(--text-main)',
+                  color: chartType === 'revenue' ? '#ffffff' : 'var(--text-muted)',
                   cursor: 'pointer', transition: 'all 0.2s ease'
                 }}
               >
