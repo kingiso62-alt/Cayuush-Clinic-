@@ -1,0 +1,63 @@
+/* Billing CSS */
+
+.billing-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.billing-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 24px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease;
+}
+
+.billing-stat-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-focus);
+}
+
+.billing-icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.bg-green { background: linear-gradient(135deg, #10B981, #059669); }
+.bg-orange { background: linear-gradient(135deg, #F59E0B, #D97706); }
+.bg-blue { background: linear-gradient(135deg, #3B82F6, #2563EB); }
+.bg-slate { background: linear-gradient(135deg, #64748B, #475569); }
+
+.billing-stat-info p {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.billing-stat-info h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1;
+}
+
+.invoice-items-section {
+  background: var(--bg-base);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 16px;
+}

@@ -1,0 +1,661 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* LIGHT MODE — Cayuush Clinic Brand Colors (Green + Pink) */
+  --bg-base: #F7FAF7;       /* Very light green-tinted white */
+  --bg-card: #FFFFFF;       /* Pure White */
+  --bg-hover: #F0F7F0;      /* Light green tint hover */
+  
+  --border-color: #E2EDE2;  /* Green-tinted border */
+  --border-focus: #B8D4B8;  /* Stronger green border */
+  
+  --text-main: #0F1F0F;     /* Deep green-black */
+  --text-muted: #5A7A5A;    /* Muted green-gray */
+  
+  /* PRIMARY: Logo Dark Green */
+  --primary-brand: #2E7D32; /* Logo Forest Green */
+  --primary-hover: #1B5E20; /* Darker Forest Green */
+
+  /* SECONDARY: Logo Pink/Magenta */
+  --brand-pink: #C8247E;    /* Logo Magenta Pink */
+  --brand-pink-hover: #A01A64; /* Darker Pink */
+
+  --accent-pink: #C8247E;   /* Logo Pink — used as accent */
+  --accent-blue: #3B82F6;   /* Blue 500 */
+  --accent-orange: #F59E0B; /* Amber 500 */
+  --accent-red: #EF4444;    /* Red 500 */
+  
+  --shadow-sm: 0 1px 2px 0 rgba(46, 125, 50, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(46, 125, 50, 0.08), 0 2px 4px -1px rgba(46, 125, 50, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(46, 125, 50, 0.10), 0 4px 6px -2px rgba(46, 125, 50, 0.05);
+  --shadow-card: 0 4px 24px rgba(46, 125, 50, 0.05);
+  --shadow-glow: 0 0 18px rgba(46, 125, 50, 0.18);
+  --shadow-pink-glow: 0 0 18px rgba(200, 36, 126, 0.18);
+
+  /* Sidebar — dark green, inspired by logo */
+  --sidebar-bg: #0A1F0A;    /* Very deep forest green */
+  --header-bg: #FFFFFF;
+
+  /* Legacy & Outer Component Compatibility Variables */
+  --card-bg: var(--bg-card);
+  --dash-bg: var(--bg-base);
+  --panel-border: var(--border-color);
+  --input-bg: var(--bg-base);
+  --text-primary: var(--text-main);
+  --text-gray: var(--text-muted);
+  --primary-color: var(--primary-brand);
+}
+
+[data-theme='dark'] {
+  /* DARK MODE — Cayuush Clinic Brand Colors (Deep Green + Neon Pink) */
+  --bg-base: #071007;       /* Deep forest night */
+  --bg-card: #0F1F0F;       /* Dark green card */
+  --bg-hover: #162616;      /* Hover green */
+  
+  --border-color: #1E3A1E;  /* Green-tinted dark border */
+  --border-focus: #2E5A2E;  /* Stronger green focus */
+  
+  --text-main: #E8F5E8;     /* Light green-white text */
+  --text-muted: #7AAB7A;    /* Muted green text */
+  
+  /* PRIMARY: Neon logo green for dark mode */
+  --primary-brand: #4CAF50; /* Brighter Green for dark bg */
+  --primary-hover: #66BB6A; /* Even lighter green on hover */
+
+  /* SECONDARY: Vibrant logo pink */
+  --brand-pink: #E91E8C;    /* Neon Logo Pink */
+  --brand-pink-hover: #F06292; /* Lighter Pink */
+
+  --accent-pink: #E91E8C;   /* Neon Logo Pink */
+  --accent-blue: #60A5FA;   /* Blue */
+  --accent-orange: #FBBF24; /* Amber */
+  --accent-red: #F87171;    /* Red */
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 4px 20px rgba(76, 175, 80, 0.10);
+  --shadow-glow: 0 0 20px rgba(76, 175, 80, 0.25);
+  --shadow-pink-glow: 0 0 20px rgba(233, 30, 140, 0.25);
+
+  /* Sidebar & Header */
+  --sidebar-bg: #040C04;    /* Deepest forest for dark mode sidebar */
+  --header-bg: #0F1F0F;
+
+  /* Legacy & Outer Component Compatibility Variables */
+  --card-bg: var(--bg-card);
+  --dash-bg: var(--bg-base);
+  --panel-border: var(--border-color);
+  --input-bg: #0A160A;
+  --text-primary: var(--text-main);
+  --text-gray: var(--text-muted);
+  --primary-color: var(--primary-brand);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+  letter-spacing: -0.01em;
+  color: var(--text-main);
+}
+
+/* Accessible keyboard focus ring on every interactive element */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--primary-brand) !important;
+  outline-offset: 2px !important;
+  border-radius: 6px;
+}
+
+/* Custom Scrollbar for the entire system */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-focus);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Utility Animations */
+.fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Common Form Elements used across all pages */
+.premium-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-base);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.premium-input:focus {
+  border-color: var(--primary-brand);
+  box-shadow: var(--shadow-glow);
+}
+
+.premium-btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: none;
+  background: var(--primary-brand);
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.premium-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.premium-btn-outline {
+  padding: 12px 24px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.premium-btn-outline:hover {
+  background: var(--bg-hover);
+}
+
+/* ==========================================
+   GLOBAL CLINIC AESTHETICS OVERRIDES & POLISH
+   ========================================== */
+
+/* Cards & Panel Lifts */
+.kpi-mini-card, 
+.patients-kpi-ribbon .kpi-mini-card, 
+.appointments-kpi-ribbon .kpi-mini-card, 
+.billing-stat-card, 
+.lab-kpi-card, 
+.rad-kpi-card, 
+.staff-kpi-card, 
+.widget-card, 
+.panel-card,
+.departments-list-row {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.kpi-mini-card:hover, 
+.patients-kpi-ribbon .kpi-mini-card:hover, 
+.appointments-kpi-ribbon .kpi-mini-card:hover, 
+.billing-stat-card:hover, 
+.lab-kpi-card:hover, 
+.rad-kpi-card:hover, 
+.staff-kpi-card:hover, 
+.widget-card:hover,
+.departments-list-row:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: var(--shadow-lg), var(--shadow-glow) !important;
+  border-color: var(--primary-brand) !important;
+}
+
+/* Primary Color Buttons & Highlights */
+.add-new-patient-btn, 
+.book-appointment-btn, 
+.add-dept-btn, 
+.new-appt-btn, 
+.add-staff-btn {
+  background-color: var(--primary-brand) !important;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25) !important;
+  transition: all 0.2s ease !important;
+  color: white !important;
+}
+
+.add-new-patient-btn:hover, 
+.book-appointment-btn:hover, 
+.add-dept-btn:hover, 
+.new-appt-btn:hover, 
+.add-staff-btn:hover {
+  background-color: var(--primary-hover) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Pagination Overrides */
+.page-num-btn.active {
+  background-color: var(--primary-brand) !important;
+  border-color: transparent !important;
+  color: white !important;
+  box-shadow: 0 2px 6px rgba(46, 125, 50, 0.30) !important;
+}
+
+/* Custom Status Pills & Tags */
+.status-pill.active, 
+.status-badge.success, 
+.payment-pill.paid, 
+.trans-tag.paid,
+.trans-tag-custom.completed {
+  background: rgba(46, 125, 50, 0.10) !important;
+  color: var(--primary-brand) !important;
+  border-color: transparent !important;
+}
+
+.circular-btn.edit:hover, 
+.action-circular-btn.edit:hover {
+  background: rgba(46, 125, 50, 0.10) !important;
+  color: var(--primary-brand) !important;
+  border-color: var(--primary-brand) !important;
+}
+
+/* Select Dropdown inputs */
+.filter-dropdown select, 
+.pagination-size-select select {
+  background-color: var(--bg-base) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-muted) !important;
+  transition: all 0.2s ease !important;
+}
+
+.filter-dropdown select:focus, 
+.pagination-size-select select:focus {
+  border-color: var(--primary-brand) !important;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15) !important;
+}
+
+/* Timelines styling */
+.schedule-timeline .timeline-item .dot.green {
+  background-color: var(--primary-brand) !important;
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.18) !important;
+}
+
+.schedule-timeline .timeline-item .status-badge.green {
+  background-color: rgba(46, 125, 50, 0.10) !important;
+  color: var(--primary-brand) !important;
+}
+
+/* ==========================================================================
+   LIME-TEAL LUXURY MEDICAL GRAPHICS SYSTEM OVERRIDES (WOW DESIGN UPGRADE)
+   ========================================================================== */
+
+/* 1. Global Typography & Canvas Smoothing */
+body {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  background-color: var(--bg-base) !important;
+  color: var(--text-main) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 2. Premium Card Styling & Lifts */
+.panel-card, 
+.kpi-mini-card, 
+.billing-stat-card, 
+.lab-kpi-card, 
+.rad-kpi-card, 
+.staff-kpi-card, 
+.widget-card,
+.modal-content,
+.debts-list-container,
+.departments-list-container {
+  border-radius: 16px !important;
+  border: 1px solid var(--border-color) !important;
+  background-color: var(--bg-card) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.panel-card:hover, 
+.kpi-mini-card:hover, 
+.billing-stat-card:hover, 
+.lab-kpi-card:hover, 
+.rad-kpi-card:hover, 
+.staff-kpi-card:hover, 
+.widget-card:hover {
+  transform: translateY(-5px) !important;
+  box-shadow: 0 12px 30px rgba(46, 125, 50, 0.10), var(--shadow-glow) !important;
+  border-color: var(--primary-brand) !important;
+}
+
+/* 3. Luxury Buttons (Gradients & Glows) — Logo Green + Pink accent */
+.premium-btn,
+.add-new-patient-btn, 
+.book-appointment-btn, 
+.add-dept-btn, 
+.new-appt-btn, 
+.add-staff-btn,
+.add-debt-btn {
+  background: linear-gradient(135deg, var(--primary-brand) 0%, var(--primary-hover) 100%) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 11px 22px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.2px !important;
+  color: white !important;
+  box-shadow: 0 4px 14px rgba(46, 125, 50, 0.30) !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.premium-btn:hover,
+.add-new-patient-btn:hover, 
+.book-appointment-btn:hover, 
+.add-dept-btn:hover, 
+.new-appt-btn:hover, 
+.add-staff-btn:hover,
+.add-debt-btn:hover {
+  background: linear-gradient(135deg, var(--primary-hover) 0%, #0A3D0A 100%) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.40) !important;
+}
+
+/* 4. Elegant Input fields */
+.premium-input, 
+input[type="text"], 
+input[type="number"], 
+input[type="email"], 
+input[type="password"], 
+input[type="date"], 
+select, 
+textarea {
+  border-radius: 10px !important;
+  border: 1px solid var(--border-color) !important;
+  background-color: var(--bg-card) !important;
+  color: var(--text-main) !important;
+  padding: 10px 14px !important;
+  font-size: 0.88rem !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.premium-input:focus, 
+input[type="text"]:focus, 
+input[type="number"]:focus, 
+input[type="email"]:focus, 
+input[type="password"]:focus, 
+input[type="date"]:focus, 
+select:focus, 
+textarea:focus {
+  border-color: var(--primary-brand) !important;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15) !important;
+  outline: none !important;
+}
+
+/* 5. Floating Table Row Cards (Luxury Layout) */
+.appointments-table-custom, 
+.transactions-table-custom, 
+.patients-table-custom, 
+.staff-table-custom {
+  border-collapse: separate !important;
+  border-spacing: 0 8px !important;
+  width: 100% !important;
+}
+
+.appointments-table-custom tr, 
+.transactions-table-custom tr, 
+.patients-table-custom tr, 
+.staff-table-custom tr {
+  background-color: var(--bg-card) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.25s ease !important;
+}
+
+.appointments-table-custom tr:hover, 
+.transactions-table-custom tr:hover, 
+.patients-table-custom tr:hover, 
+.staff-table-custom tr:hover {
+  background-color: var(--bg-hover) !important;
+  transform: scale(1.008) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04) !important;
+}
+
+.appointments-table-custom td, 
+.transactions-table-custom td, 
+.patients-table-custom td, 
+.staff-table-custom td {
+  padding: 14px 16px !important;
+  border: none !important;
+}
+
+.appointments-table-custom td:first-child, 
+.transactions-table-custom td:first-child, 
+.patients-table-custom td:first-child, 
+.staff-table-custom td:first-child {
+  border-top-left-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+}
+
+.appointments-table-custom td:last-child, 
+.transactions-table-custom td:last-child, 
+.patients-table-custom td:last-child, 
+.staff-table-custom td:last-child {
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+}
+
+/* 6. Sidebar Navigation Pills (Tailwind-like Active States) */
+.nav-item {
+  margin: 3px 10px !important;
+  border-radius: 10px !important;
+  padding: 10px 16px !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.nav-item:hover {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  color: white !important;
+  transform: translateX(4px) !important;
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, var(--primary-brand) 0%, rgba(200, 36, 126, 0.25) 100%) !important;
+  color: white !important;
+  border-left: none !important;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.30) !important;
+  font-weight: 600 !important;
+  padding-left: 16px !important;
+}
+
+/* 7. Rounded Avatar styling */
+.profile-avatar, .staff-row-avatar {
+  border: 2px solid rgba(46, 125, 50, 0.20) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* ==========================================================================
+   PROFESSIONAL POLISH LAYER — new, opt-in utility classes.
+   Nothing above this line was removed. These classes don't exist yet in
+   any page, so add them to JSX wherever needed; they won't change any
+   existing behaviour until used.
+   ========================================================================== */
+
+/* 8. Skeleton loaders */
+.skeleton {
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--bg-hover) 25%, var(--border-color) 37%, var(--bg-hover) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+}
+@keyframes skeleton-loading {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+.skeleton-card { height: 96px; width: 100%; border-radius: 14px; }
+.skeleton-line { height: 14px; width: 100%; margin-bottom: 8px; }
+.skeleton-avatar { height: 40px; width: 40px; border-radius: 50%; }
+
+/* 9. Empty states */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 56px 24px;
+  color: var(--text-muted);
+}
+.empty-state-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--bg-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-brand);
+  margin-bottom: 16px;
+}
+.empty-state-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+.empty-state-desc { font-size: 0.85rem; max-width: 320px; }
+
+/* 10. Toast notifications */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toast {
+  min-width: 280px;
+  max-width: 360px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  padding: 14px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  transform: translateX(120%);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.toast.show { transform: translateX(0); opacity: 1; }
+.toast-icon { flex-shrink: 0; width: 20px; height: 20px; margin-top: 1px; }
+.toast.success .toast-icon { color: #16A34A; }
+.toast.error .toast-icon { color: var(--accent-red); }
+.toast-title { font-weight: 600; font-size: 0.88rem; color: var(--text-main); }
+.toast-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+/* 11. Confirm dialog */
+.confirm-dialog {
+  max-width: 380px;
+  background: var(--bg-card);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  padding: 24px;
+  text-align: center;
+}
+.confirm-dialog-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--accent-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+}
+.confirm-dialog-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; }
+.confirm-dialog-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+.confirm-dialog-actions { display: flex; gap: 10px; }
+.confirm-dialog-actions button { flex: 1; }
+.btn-danger {
+  background: var(--accent-red) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 11px 22px !important;
+  font-weight: 600 !important;
+  cursor: pointer;
+  transition: all 0.2s ease !important;
+}
+.btn-danger:hover { filter: brightness(0.92); transform: translateY(-1px); }
+
+/* 12. Status badges */
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.badge-success { background: rgba(22, 163, 74, 0.1); color: #16A34A; }
+.badge-warning { background: rgba(217, 119, 6, 0.1); color: var(--accent-orange); }
+.badge-danger  { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); }
+.badge-info    { background: rgba(59, 130, 246, 0.1); color: var(--accent-blue); }
+.badge-neutral { background: var(--bg-hover); color: var(--text-muted); }
+
+/* 13. Tooltip */
+.tooltip { position: relative; display: inline-flex; }
+.tooltip::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--text-main);
+  color: var(--bg-base);
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s ease;
+  z-index: 10;
+}
+.tooltip:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* 14. Print-friendly invoices */
+@media print {
+  body * { visibility: hidden; }
+  .print-invoice, .print-invoice * { visibility: visible; }
+  .print-invoice { position: absolute; top: 0; left: 0; width: 100%; }
+}

@@ -1,0 +1,266 @@
+/* ══════════════════════════════════════════
+   PRESCRIPTION WRITER — CSS
+   ══════════════════════════════════════════ */
+
+.prx-root {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f4f6;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+/* ── LEFT FORM PANEL ── */
+.prx-form-panel {
+  width: 300px;
+  min-width: 280px;
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 12px rgba(0,0,0,0.06);
+  z-index: 2;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.prx-form-header {
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  color: white;
+  padding: 20px 20px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.prx-form-header h2 { margin: 0 0 4px 0; font-size: 1rem; font-weight: 700; }
+.prx-form-header p  { margin: 0; font-size: 0.75rem; color: rgba(255,255,255,0.55); }
+
+.prx-form-body { padding: 16px; flex: 1; }
+
+.prx-field { margin-bottom: 12px; }
+.prx-field label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.prx-field input,
+.prx-field select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  background: #f9fafb;
+  color: #1f2937;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.prx-field input:focus,
+.prx-field select:focus { border-color: #8B006D; background: white; }
+
+.prx-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.prx-section-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 14px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.prx-med-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+.prx-med-row input {
+  flex: 1;
+  padding: 7px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+  font-size: 0.8rem;
+  background: #f9fafb;
+  color: #1f2937;
+  min-width: 0;
+  outline: none;
+}
+.prx-med-row input:focus { border-color: #8B006D; background: white; }
+
+.prx-remove-btn {
+  background: #fee2e2;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.prx-remove-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.prx-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1.5px dashed #8B006D;
+  color: #8B006D;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.prx-add-btn:hover { background: #fdf2fb; }
+
+.prx-print-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  margin-top: 18px;
+  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.prx-print-btn:hover { opacity: 0.9; }
+
+.prx-reset-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 9px;
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.prx-reset-btn:hover { background: #f9fafb; color: #374151; }
+
+/* ── RIGHT PREVIEW PANEL ── */
+.prx-preview-panel {
+  flex: 1;
+  background: white;
+  margin: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.1);
+  padding: 36px 40px;
+  max-width: 820px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-self: flex-start;
+}
+
+/* Header */
+.prx-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.prx-clinic-info { display: flex; align-items: center; gap: 16px; }
+.prx-logo { height: 72px; width: 72px; object-fit: contain; }
+.prx-doctor-name { margin: 0; font-size: 1.35rem; font-weight: 800; color: #8B006D; }
+.prx-specialty   { margin: 2px 0; font-size: 0.85rem; color: #0f3460; font-style: italic; }
+.prx-location    { margin: 2px 0; font-size: 0.8rem; color: #6b7280; }
+.prx-contact-block { text-align: center; }
+.prx-qr { width: 70px; height: 70px; display: block; margin-bottom: 6px; }
+.prx-phone { font-size: 0.8rem; font-weight: 700; color: #6b7280; }
+
+/* Divider */
+.prx-divider {
+  height: 3px;
+  background: linear-gradient(90deg, #8B006D, #0f3460);
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+
+/* Rx Title */
+.prx-rx-title { display: flex; align-items: center; gap: 4px; margin-bottom: 18px; }
+.prx-rx-symbol { font-size: 1.8rem; font-weight: 900; color: #8B006D; font-family: serif; }
+.prx-rx-x      { font-size: 1.4rem; font-weight: 700; color: #8B006D; font-family: serif; }
+.prx-rx-word   { font-size: 1.3rem; font-weight: 800; color: #0f3460; letter-spacing: 3px; margin-left: 8px; text-transform: uppercase; }
+
+/* Patient info grid */
+.prx-info-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+.prx-info-row  { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.prx-info-label { font-size: 0.85rem; font-weight: 600; color: #374151; flex-shrink: 0; }
+.prx-info-value { font-size: 0.9rem; color: #111827; min-width: 120px; }
+.prx-underline  { border-bottom: 1px solid #9ca3af; display: inline-block; min-width: 160px; padding-bottom: 2px; }
+.prx-underline.full { flex: 1; }
+
+/* Medications area */
+.prx-rx-body { flex: 1; margin-bottom: 28px; }
+.prx-rx-italic { font-family: 'Georgia', serif; font-style: italic; font-size: 1.8rem; color: #8B006D; margin-bottom: 12px; }
+.prx-placeholder { color: #9ca3af; font-style: italic; font-size: 0.9rem; }
+
+.prx-med-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.prx-med-table thead tr { background: #8B006D; color: white; }
+.prx-med-table th { padding: 9px 12px; text-align: left; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.prx-med-table td { padding: 10px 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937; }
+.prx-med-table tr:nth-child(even) td { background: #fdf2fb; }
+
+/* Footer */
+.prx-preview-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 40px;
+  padding-top: 20px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.prx-next-visit { font-size: 0.9rem; color: #374151; }
+.prx-next-val   { min-width: 100px; }
+.prx-signature  { text-align: center; }
+.prx-sig-line   { height: 1px; background: #9ca3af; width: 200px; margin-bottom: 6px; }
+.prx-signature span { font-size: 0.78rem; color: #6b7280; }
+
+/* Bottom bar */
+.prx-bottom-bar {
+  text-align: center;
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 2px dashed #e5e7eb;
+}
+
+/* Print */
+@media print {
+  .no-print { display: none !important; }
+  .prx-root { display: block; }
+  .prx-preview-panel {
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    padding: 1cm 2cm !important;
+  }
+}

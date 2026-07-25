@@ -1,0 +1,339 @@
+/* Debts Stylesheet */
+.debts-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease;
+}
+
+/* Header */
+.debts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.debts-header-left h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+
+.debts-header-left .breadcrumb-path {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.add-debt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--primary-brand);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+  transition: all 0.2s ease;
+}
+
+.add-debt-btn:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* Fallback Banner */
+.db-fallback-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: #D97706;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+/* Ribbon Cards */
+.debts-kpi-ribbon {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+/* Pulse keyframes for active alarm cards */
+@keyframes pulseRed {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.pulse-alarm {
+  animation: pulseRed 2s infinite;
+  border-radius: 50%;
+}
+
+/* Toolbar & Filters */
+.debts-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.debts-filters {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-tab {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 550;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-tab:hover {
+  background: var(--bg-hover);
+  color: var(--text-main);
+}
+
+.filter-tab.active {
+  background: var(--primary-brand);
+  color: white;
+  border-color: var(--primary-brand);
+}
+
+.debts-search-wrapper {
+  position: relative;
+  width: 320px;
+}
+
+.debts-search-wrapper .search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.debts-search-wrapper input {
+  width: 100%;
+  padding: 9px 12px 9px 38px;
+  background-color: var(--bg-base);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+.debts-search-wrapper input:focus {
+  border-color: var(--primary-brand);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  outline: none;
+}
+
+/* Debts Rows Table Layout */
+.debts-list-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.debts-table-header {
+  display: grid;
+  grid-template-columns: 2.5fr 1.2fr 1.5fr 3fr 1.2fr 1.2fr;
+  padding: 14px 20px;
+  background: var(--bg-hover);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.debts-rows-stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.debts-list-row {
+  display: grid;
+  grid-template-columns: 2.5fr 1.2fr 1.5fr 3fr 1.2fr 1.2fr;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  align-items: center;
+  transition: all 0.2s ease;
+  background-color: var(--bg-card);
+}
+
+.debts-list-row:last-child {
+  border-bottom: none;
+}
+
+.debts-list-row:hover {
+  background-color: var(--bg-hover);
+  transform: translateX(4px);
+}
+
+/* Highlight variations */
+.overdue-row {
+  border-left: 4px solid var(--accent-red);
+}
+
+.due-today-row {
+  border-left: 4px solid var(--accent-orange);
+}
+
+.paid-row {
+  border-left: 4px solid var(--accent-green);
+  opacity: 0.85;
+}
+
+.patient-name-span {
+  font-weight: 600;
+  color: var(--text-main);
+  font-size: 0.95rem;
+  margin-right: 8px;
+}
+
+.alert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.alert-badge.text-red {
+  background-color: rgba(239, 68, 68, 0.08);
+  color: var(--accent-red);
+}
+
+.alert-badge.text-yellow {
+  background-color: rgba(245, 158, 11, 0.08);
+  color: var(--accent-orange);
+}
+
+.amount-text {
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.due-date-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  color: var(--text-main);
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-align: center;
+  cursor: pointer;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.status-pill.pending {
+  background-color: rgba(245, 158, 11, 0.08);
+  color: var(--accent-orange);
+}
+
+.status-pill.paid {
+  background-color: rgba(13, 148, 136, 0.08);
+  color: var(--primary-brand);
+}
+
+.status-pill:hover {
+  transform: scale(1.05);
+}
+
+/* Empty State & Loader */
+.debts-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 0;
+  color: var(--text-muted);
+  gap: 12px;
+}
+
+.debts-loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  color: var(--text-muted);
+  gap: 16px;
+}
+
+.debts-loading-container .spinner {
+  color: var(--primary-brand);
+}
+
+/* Responsive columns collapse on screens */
+@media (max-width: 1024px) {
+  .debts-table-header, .debts-list-row {
+    grid-template-columns: 2fr 1fr 1.2fr 2fr 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .debts-table-header {
+    display: none;
+  }
+  .debts-list-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    border-bottom: 8px solid var(--border-color);
+  }
+  .debts-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .debts-search-wrapper {
+    width: 100%;
+  }
+}

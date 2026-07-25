@@ -1,0 +1,190 @@
+/* Reports CSS */
+
+.reports-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.reports-kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.reports-kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-focus);
+}
+
+.rk-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.rk-info p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.rk-info h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1;
+}
+
+/* Period Switcher */
+.period-switcher {
+  display: flex;
+  background: var(--bg-hover);
+  padding: 4px;
+  border-radius: 10px;
+  gap: 4px;
+}
+
+.period-btn {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.period-btn:hover {
+  color: var(--text-main);
+}
+
+.period-btn.active {
+  background: var(--bg-card);
+  color: var(--primary-brand);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Charts */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.chart-card.wide {
+  /* naturally 2fr */
+}
+
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.chart-card-header h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.chart-period-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-hover);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.empty-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 240px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+/* Top Tests List */
+.top-tests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 8px;
+}
+
+.top-test-item {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.test-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.test-rank {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  min-width: 20px;
+}
+
+.test-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.test-bar-wrap {
+  height: 8px;
+  background: var(--bg-hover);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.test-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+
+.test-count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  min-width: 24px;
+  text-align: right;
+}

@@ -1,0 +1,391 @@
+/* Premium Procedures Page Stylesheet */
+.procedures-layout {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.procedures-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.procedures-header-left h1 {
+  margin: 0 0 4px 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.procedures-subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.procedures-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.procedures-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.procedures-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.procedures-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.procedures-stat-icon.total { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+.procedures-stat-icon.pending { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+.procedures-stat-icon.active { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+.procedures-stat-icon.completed { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+
+.procedures-stat-info h3 {
+  margin: 0 0 2px 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.procedures-stat-info p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.procedures-toolbar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow-sm);
+}
+
+.procedures-search-input {
+  flex: 1;
+  min-width: 240px;
+  position: relative;
+}
+
+.procedures-search-input input {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+  font-size: 0.9rem;
+}
+
+.procedures-search-input svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.procedures-filter-select {
+  padding: 10px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-body);
+  color: var(--text-main);
+  font-size: 0.88rem;
+  outline: none;
+  cursor: pointer;
+  min-width: 160px;
+}
+
+.procedures-reset-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-main);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.procedures-reset-btn:hover {
+  background: var(--border-color);
+}
+
+.procedures-split-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .procedures-split-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.procedures-main-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.procedures-panel-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.procedures-panel-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.procedures-tab-pills {
+  display: flex;
+  background: var(--bg-body);
+  padding: 4px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.procedures-tab-pill {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--text-muted);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.procedures-tab-pill.active {
+  background: var(--bg-card);
+  color: var(--primary-brand);
+  box-shadow: var(--shadow-sm);
+}
+
+.procedures-table-inner {
+  overflow-x: auto;
+}
+
+.procedures-data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.procedures-data-table th {
+  text-align: left;
+  padding: 14px 20px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
+  font-weight: 700;
+  background: var(--bg-body);
+}
+
+.procedures-data-table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.88rem;
+  color: var(--text-main);
+}
+
+.procedures-data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.procedures-status-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.procedures-status-pill.planned { background: #DBEAFE; color: #1E40AF; }
+.procedures-status-pill.confirmed { background: #E0F2FE; color: #0369A1; }
+.procedures-status-pill.in-progress { background: #FEF3C7; color: #D97706; }
+.procedures-status-pill.completed { background: #D1FAE5; color: #065F46; }
+.procedures-status-pill.postponed { background: #F3E8FF; color: #6D28D9; }
+.procedures-status-pill.cancelled { background: #F1F5F9; color: #475569; }
+
+.procedures-action-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.procedures-action-btn:hover {
+  background: var(--border-color);
+}
+
+.procedures-side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.procedures-catalog-summary-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.procedures-catalog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.procedures-catalog-header h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.procedures-catalog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.procedures-catalog-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: var(--bg-body);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.procedures-catalog-item-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  margin-bottom: 2px;
+}
+
+.procedures-catalog-item-cat {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.procedures-catalog-item-price {
+  font-weight: 800;
+  color: var(--primary-brand);
+}
+
+/* Supplies selector */
+.procedures-supplies-box {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--bg-body);
+}
+
+.procedures-supplies-search-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.procedures-supplies-search-wrap input {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
+
+.procedures-supplies-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.procedures-supplies-dropdown-item {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.procedures-supplies-dropdown-item:hover {
+  background: var(--border-color);
+}
+
+.procedures-selected-supply-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--border-color);
+  font-size: 0.85rem;
+}
+
+.procedures-selected-supply-row:last-child {
+  border-bottom: none;
+}

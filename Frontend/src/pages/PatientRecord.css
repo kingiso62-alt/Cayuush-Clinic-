@@ -1,0 +1,638 @@
+/* PatientRecord CSS */
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  color: var(--text-main);
+  border-color: var(--border-focus);
+  background: var(--bg-hover);
+}
+
+/* Hero Card styling - Premium dark/slate theme or white border shadow */
+.patient-hero-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 28px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  box-shadow: var(--shadow-sm);
+  gap: 24px;
+}
+
+@media (max-width: 992px) {
+  .patient-hero-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 28px;
+  }
+}
+
+.patient-hero-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+@media (max-width: 576px) {
+  .patient-hero-left {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.hero-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.hero-info h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 8px;
+  text-transform: capitalize;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.meta-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: var(--bg-base);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+.hero-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.patient-hero-right {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.hero-stat {
+  text-align: center;
+  background-color: var(--bg-base);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 12px 20px;
+  min-width: 100px;
+  flex: 1;
+}
+
+.hero-stat h3 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.hero-stat p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Tabs formatting */
+.record-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 28px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.record-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.record-tab-btn:hover {
+  color: var(--text-main);
+}
+
+.record-tab-btn.active {
+  color: var(--primary-brand);
+  border-bottom-color: var(--primary-brand);
+}
+
+.record-content {
+  animation: fadeIn 0.3s ease;
+}
+
+/* Overview Section Cards */
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 992px) {
+  .overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.info-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+}
+
+.info-section h3 {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.info-item.full {
+  grid-column: 1 / -1;
+}
+
+.info-item label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-item span {
+  font-size: 0.9rem;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* Modern Timeline */
+.timeline {
+  position: relative;
+  padding-left: 32px;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-color);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: -27px;
+  top: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-card);
+  box-shadow: 0 0 0 2px var(--border-color);
+}
+
+.timeline-dot.completed { background: var(--primary-brand); box-shadow: 0 0 0 2px rgba(16,185,129,0.25); }
+.timeline-dot.waiting { background: var(--accent-orange); }
+.timeline-dot.cancelled { background: var(--accent-red); }
+
+.timeline-body {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.timeline-body:hover {
+  border-color: var(--border-focus);
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.timeline-date {
+  font-weight: 700;
+  color: var(--text-main);
+  font-size: 0.9rem;
+}
+
+.timeline-note {
+  color: var(--text-main);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.timeline-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Beautiful Premium Table Styles */
+.table-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  overflow-x: auto;
+  box-shadow: var(--shadow-sm);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background-color: var(--bg-base);
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 24px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.data-table tr {
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s;
+}
+
+.data-table tr:last-child {
+  border-bottom: none;
+}
+
+.data-table tr:hover {
+  background-color: var(--bg-hover);
+}
+
+.data-table td {
+  padding: 16px 24px;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Status Pill classes */
+.status-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-block;
+  text-transform: capitalize;
+}
+
+.status-completed {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--primary-brand);
+}
+
+.status-waiting {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--accent-orange);
+}
+
+.status-cancelled {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--accent-red);
+}
+
+/* Custom styles for specific invoice/lab states */
+.status-pill.status-completed,
+.status-pill.status-paid {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--primary-brand);
+}
+
+.status-pill.status-waiting,
+.status-pill.status-pending,
+.status-pill.status-partial {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--accent-orange);
+}
+
+.status-pill.status-cancelled,
+.status-pill.status-unpaid {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--accent-red);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: var(--bg-card);
+  border: 1px dashed var(--border-color);
+  border-radius: 16px;
+}
+
+/* Actions Row */
+.patient-record-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.back-btn {
+  margin-bottom: 0 !important;
+}
+
+.print-record-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--primary-brand);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 18px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+  transition: all 0.2s;
+}
+
+.print-record-btn:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* Print Overrides */
+@media print {
+  aside.sidebar,
+  header.main-header-new,
+  .patient-record-actions-row,
+  .record-tabs,
+  .help-support-wrapper,
+  .sidebar-footer-controls {
+    display: none !important;
+  }
+
+  body.printing-prescription .page-layout,
+  body.printing-prescription .modal-overlay,
+  body.printing-invoice .page-layout {
+    display: none !important;
+  }
+
+  body.printing-prescription .printable-prescription {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 99999;
+    padding: 2cm;
+  }
+
+  body.printing-invoice .modal-overlay {
+    background: transparent !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  body.printing-invoice .modal-content {
+    box-shadow: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+  
+  body.printing-invoice .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  main.main-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  .page-content-wrapper {
+    padding: 0 !important;
+  }
+
+  .patient-hero-card {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    background-color: #fafafa !important;
+    padding: 20px !important;
+    margin-bottom: 24px !important;
+    page-break-inside: avoid;
+  }
+
+  .hero-avatar {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+  }
+
+  .hero-stat {
+    border: 1px solid #ddd !important;
+    background-color: #ffffff !important;
+    padding: 8px 16px !important;
+  }
+
+  .info-section {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+    background-color: #ffffff !important;
+    padding: 20px !important;
+    page-break-inside: avoid;
+  }
+
+  .overview-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 16px !important;
+  }
+
+  .table-container {
+    border: 1px solid #ddd !important;
+    box-shadow: none !important;
+  }
+
+  .data-table th {
+    background-color: #f5f5f5 !important;
+    border-bottom: 1px solid #ddd !important;
+    color: #333 !important;
+  }
+
+  .data-table td {
+    border-bottom: 1px solid #eee !important;
+    color: #333 !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 1.5cm;
+  }
+}
+
+/* Printable Prescription Styles */
+.printable-prescription {
+  display: none;
+}
+
+.printable-prescription .clinic-header {
+  text-align: center;
+  border-bottom: 2px solid #333;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+
+.printable-prescription .clinic-header h1 {
+  font-size: 28px;
+  color: #111;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.printable-prescription .clinic-header p {
+  color: #555;
+  margin: 0;
+  font-size: 14px;
+}
+
+.printable-prescription .patient-info-print {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.printable-prescription .rx-symbol {
+  font-size: 56px;
+  font-weight: bold;
+  font-family: 'Times New Roman', serif;
+  margin-bottom: 30px;
+  color: #000;
+  line-height: 1;
+}
+
+.printable-prescription .rx-items {
+  min-height: 350px;
+}
+
+.printable-prescription .rx-item {
+  margin-bottom: 24px;
+  padding-left: 20px;
+}
+
+.printable-prescription .rx-item h4 {
+  font-size: 18px;
+  margin: 0 0 8px 0;
+  color: #000;
+}
+
+.printable-prescription .rx-item p {
+  font-size: 15px;
+  color: #333;
+  margin: 0;
+  font-style: italic;
+}
+
+.printable-prescription .rx-footer {
+  margin-top: 50px;
+  text-align: right;
+  font-size: 16px;
+}

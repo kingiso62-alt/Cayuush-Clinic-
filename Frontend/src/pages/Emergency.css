@@ -1,0 +1,278 @@
+/* Premium Emergency & Ambulance Stylesheet */
+.emergency-layout {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.emergency-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.emergency-header-left h1 {
+  margin: 0 0 4px 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+}
+
+.emergency-subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.emergency-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.emergency-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.emergency-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.emergency-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.emergency-stat-icon.red { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+.emergency-stat-icon.orange { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+.emergency-stat-icon.yellow { background: rgba(234, 179, 8, 0.1); color: #EAB308; }
+.emergency-stat-icon.ambulance { background: rgba(59, 130, 246, 0.1); color: #3B82F6; }
+
+.emergency-stat-info h3 {
+  margin: 0 0 2px 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.emergency-stat-info p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.emergency-toolbar {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  box-shadow: var(--shadow-sm);
+}
+
+.emergency-search-input {
+  flex: 1;
+  min-width: 240px;
+  position: relative;
+}
+
+.emergency-search-input input {
+  width: 100%;
+  padding: 10px 12px 10px 38px;
+  font-size: 0.9rem;
+}
+
+.emergency-search-input svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.emergency-filter-select {
+  padding: 10px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-body);
+  color: var(--text-main);
+  font-size: 0.88rem;
+  outline: none;
+  cursor: pointer;
+  min-width: 160px;
+}
+
+.emergency-reset-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-main);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.emergency-reset-btn:hover {
+  background: var(--border-color);
+}
+
+.emergency-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.emergency-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.emergency-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Distinct Triage Left Border Highlights */
+.emergency-card.red { border-left: 6px solid #EF4444; }
+.emergency-card.orange { border-left: 6px solid #F59E0B; }
+.emergency-card.yellow { border-left: 6px solid #EAB308; }
+.emergency-card.green { border-left: 6px solid #10B981; }
+.emergency-card.blue { border-left: 6px solid #3B82F6; }
+
+.emergency-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.emergency-card-number {
+  font-weight: 800;
+  color: var(--text-main);
+  font-size: 0.95rem;
+}
+
+.emergency-triage-badge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white;
+}
+
+.emergency-triage-badge.red { background: #EF4444; }
+.emergency-triage-badge.orange { background: #F59E0B; }
+.emergency-triage-badge.yellow { background: #EAB308; color: #1e293b; }
+.emergency-triage-badge.green { background: #10B981; }
+.emergency-triage-badge.blue { background: #3B82F6; }
+
+.emergency-card-patient h3 {
+  margin: 0 0 2px 0;
+  font-size: 1.15rem;
+  font-weight: 750;
+  color: var(--text-main);
+}
+
+.emergency-card-patient p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.emergency-card-details {
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.85rem;
+}
+
+.emergency-detail-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.emergency-detail-label {
+  color: var(--text-muted);
+}
+
+.emergency-detail-value {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.emergency-card-complaint h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+}
+
+.emergency-card-complaint p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.emergency-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.emergency-decision-badge {
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.emergency-decision-badge.discharged { background: #F1F5F9; color: #475569; }
+.emergency-decision-badge.admitted { background: #D1FAE5; color: #065F46; }
+.emergency-decision-badge.observation { background: #FEF3C7; color: #92400E; }
+.emergency-decision-badge.transferred { background: #E0F2FE; color: #0369A1; }
